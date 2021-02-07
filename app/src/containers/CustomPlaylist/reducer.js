@@ -16,6 +16,6 @@ export default function customPlaylistReducer(state = initialState, action) {
     default:
       return state;
   }
-  setCookie('customPlaylist', newState.get('customPlaylist'));
+  setCookie('customPlaylist', newState.get('customPlaylist'), 365);
   return newState;
 }

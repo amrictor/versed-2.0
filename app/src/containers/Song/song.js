@@ -39,7 +39,7 @@ const Song = (props) => {
     if (gameWon()) {
       dispatch(win());
     }
-  }, [state.discoveredWords, song && song.id])
+  }, [JSON.stringify(state.discoveredWords), song && song.id])
 
   const discover = (word, index) => {
     let temp = state.discoveredWords

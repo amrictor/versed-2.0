@@ -1,6 +1,5 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const BrotliPlugin = require('brotli-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js',
@@ -56,13 +55,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve('./public/index.html'),
       favicon: "./public/favicon.ico"
-    }),
-    new BrotliPlugin({
-			asset: '[path].br[query]',
-			test: /\.(js|css|html|svg)$/,
-			threshold: 10240,
-			minRatio: 0.8
-		})
+    })
   ],
   optimization: {
 		splitChunks: {

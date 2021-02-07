@@ -33,7 +33,9 @@ const Playlist = () => {
 
   return (
     <div className={classes.root}>
-      {loading ? 'Loading...' : <SongList tracks={tracks}/>}
+      {loading 
+        ? <div className={classes.loading}>Loading...</div> 
+        : <SongList tracks={tracks}/>}
     </div>
   );
 }

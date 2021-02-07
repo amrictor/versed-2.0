@@ -57,7 +57,7 @@ const ControlPanel = () => {
         {currentSource && <IconButton className={classes.actionBtn} size='small' onClick={() => dispatch(loadPreviousSong())}>
           <SkipPrevious/>
         </IconButton>}
-        <IconButton className={classes.actionBtn} size='small' onClick={()=> dispatch(togglePause())}>
+        <IconButton disabled={hasForfeited || hasWon} className={classes.actionBtn} size='small' onClick={()=> dispatch(togglePause())}>
           {playing ? <Pause/> : <PlayArrow/>}
         </IconButton>
         {currentSource && <IconButton className={classes.actionBtn} size='small' onClick={() => dispatch(loadNextSong())}>

@@ -53,7 +53,8 @@ const useStyles = makeStyles({
     },
     '&:disabled': {
       backgroundColor: grey[500],
-      color: grey[900]
+      color: grey[900],
+      cursor: 'default'
     }
   },
   input: {
