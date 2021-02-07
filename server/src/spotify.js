@@ -1,11 +1,12 @@
 const SpotifyWebApi = require('spotify-web-api-node');
 const fetch = require('node-fetch');
+const { formatSongTitle } = require('./utils');
 
 const connectionData = {
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET
 }
-const redirectUri = 'http://localhost:3000/settings';
+const redirectUri = 'https://localhost:3000/settings';
 const scopes = ['user-top-read', 'user-library-modify', 'playlist-read-private', 'playlist-modify-public', 'playlist-modify-private', 'playlist-read-collaborative'];
 
 const publicSpotifyApi = new SpotifyWebApi({ ...connectionData, redirectUri });
@@ -19,13 +20,15 @@ getNewClientToken();
 tokenRefreshInterval = setInterval(getNewClientToken, 1000 * 60 * 60);
 
 
+const handleError = err => console.error(err);
+
 module.exports = {
   authorize: async () => {
-    const authorizeURL = await publicSpotifyApi.createAuthorizeURL(scopes, null, true);
+    const authorizeURL = await publicSpotifyApi.createAuthorizeURL(scopes, null, true).catch(handleError);
     return authorizeURL;
   },
   getAccessToken: async (code) => {
-    const response = await publicSpotifyApi.authorizationCodeGrant(code);
+    const response = await publicSpotifyApi.authorizationCodeGrant(code).catch(handleError);
     return {
       accessToken: response.body.access_token,
       refreshToken: response.body.refresh_token
@@ -34,12 +37,12 @@ module.exports = {
   refreshAccessToken: async (refreshToken) => {
     const spotifyApi = new SpotifyWebApi(connectionData);
     spotifyApi.setRefreshToken(refreshToken);
-    const response = await spotifyApi.refreshAccessToken();
+    const response = await spotifyApi.refreshAccessToken().catch(handleError);
     return response.body.access_token;
   },
   search: async (options) => {
     const { query, offset, limit } = options;
-    const result = await publicSpotifyApi.searchTracks(query, { offset, limit });
+    const result = await publicSpotifyApi.searchTracks(query, { offset, limit }).catch(handleError);
     return {
       items: result.body.tracks.items.map((track) => ({
         id: track.id,
@@ -65,8 +68,8 @@ module.exports = {
 
   getAlbumTracks: async (options) => {
     const { id, offset, limit } = options;
-    const album = await publicSpotifyApi.getAlbum(id, { limit, offset });
-    const result = await publicSpotifyApi.getAlbumTracks(id, { limit, offset });
+    const album = await publicSpotifyApi.getAlbum(id, { limit, offset }).catch(handleError);
+    const result = await publicSpotifyApi.getAlbumTracks(id, { limit, offset }).catch(handleError);
     return {
       items: result.body.items.map((track) => ({
         id: track.id,
@@ -91,8 +94,8 @@ module.exports = {
   },
   getArtist: async (options) => {
     const { id, offset } = options;
-    const result = await publicSpotifyApi.getArtist(id);
-    const albums_result = await publicSpotifyApi.getArtistAlbums(id);
+    const result = await publicSpotifyApi.getArtist(id).catch(handleError);
+    const albums_result = await publicSpotifyApi.getArtistAlbums(id).catch(handleError);
     return {
       id: result.body.id,
       name: result.body.name,
@@ -110,12 +113,14 @@ module.exports = {
   },
   getSong: async (options) => {
     const { id } = options;
-    const result = await publicSpotifyApi.getTrack(id);
-    const genius = await fetch(`https://api.genius.com/search?per_page=35&q=${encodeURI(`${result.body.name} ${result.body.artists[0].name}`)}&access_token=4qtBMiQeR5pD1zFm-vGmFV6j5khGAiRQskTCLXyuGbxeYGbnXrTnXIyA5n2iXjdg`, { method: 'get' })
-    const json = await genius.json()
+    const result = await publicSpotifyApi.getTrack(id).catch(handleError);
+    const genius = await fetch(`https://api.genius.com/search?per_page=35&q=${encodeURI(`${formatSongTitle(result.body.name)} ${result.body.artists[0].name}`)}&access_token=4qtBMiQeR5pD1zFm-vGmFV6j5khGAiRQskTCLXyuGbxeYGbnXrTnXIyA5n2iXjdg`, { method: 'get' }).catch(handleError);
+    const json = await genius.json().catch(handleError);
     return {
       id: result.body.id,
-      genius: json.response.hits[0].result.id,
+      genius: json.response.hits.length > 0 
+        ? json.response.hits[0].result.id 
+        : null,
       name: result.body.name,
       artists: result.body.artists.map((artist) => ({
         id: artist.id,
@@ -136,7 +141,7 @@ module.exports = {
     const { accessToken, offset, limit } = options;
     const spotifyApi = new SpotifyWebApi(connectionData);
     spotifyApi.setAccessToken(accessToken);
-    const result = await spotifyApi.getUserPlaylists({ limit, offset });
+    const result = await spotifyApi.getUserPlaylists({ limit, offset }).catch(handleError);
     return {
       items: result.body.items.map(playlist => ({
         id: playlist.id,
@@ -153,7 +158,7 @@ module.exports = {
     const { accessToken, id, offset, limit } = options;
     const spotifyApi = new SpotifyWebApi(connectionData);
     spotifyApi.setAccessToken(accessToken);
-    const result = await spotifyApi.getPlaylistTracks(id, { limit, offset });
+    const result = await spotifyApi.getPlaylistTracks(id, { limit, offset }).catch(handleError);
     return {
       items: result.body.items.map((playlistTrack) => ({
         id: playlistTrack.track.id,
