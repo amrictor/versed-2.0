@@ -19,16 +19,13 @@ getNewClientToken();
 
 tokenRefreshInterval = setInterval(getNewClientToken, 1000 * 60 * 60);
 
-
-const handleError = err => console.error(err);
-
 module.exports = {
   authorize: async () => {
-    const authorizeURL = await publicSpotifyApi.createAuthorizeURL(scopes, null, true).catch(handleError);
+    const authorizeURL = await publicSpotifyApi.createAuthorizeURL(scopes, null, true);
     return authorizeURL;
   },
   getAccessToken: async (code) => {
-    const response = await publicSpotifyApi.authorizationCodeGrant(code).catch(handleError);
+    const response = await publicSpotifyApi.authorizationCodeGrant(code);
     return {
       accessToken: response.body.access_token,
       refreshToken: response.body.refresh_token
@@ -37,12 +34,12 @@ module.exports = {
   refreshAccessToken: async (refreshToken) => {
     const spotifyApi = new SpotifyWebApi(connectionData);
     spotifyApi.setRefreshToken(refreshToken);
-    const response = await spotifyApi.refreshAccessToken().catch(handleError);
+    const response = await spotifyApi.refreshAccessToken();
     return response.body.access_token;
   },
   search: async (options) => {
     const { query, offset, limit } = options;
-    const result = await publicSpotifyApi.searchTracks(query, { offset, limit }).catch(handleError);
+    const result = await publicSpotifyApi.searchTracks(query, { offset, limit });
     return {
       items: result.body.tracks.items.map((track) => ({
         id: track.id,
@@ -68,8 +65,8 @@ module.exports = {
 
   getAlbumTracks: async (options) => {
     const { id, offset, limit } = options;
-    const album = await publicSpotifyApi.getAlbum(id, { limit, offset }).catch(handleError);
-    const result = await publicSpotifyApi.getAlbumTracks(id, { limit, offset }).catch(handleError);
+    const album = await publicSpotifyApi.getAlbum(id, { limit, offset });
+    const result = await publicSpotifyApi.getAlbumTracks(id, { limit, offset });
     return {
       items: result.body.items.map((track) => ({
         id: track.id,
@@ -94,8 +91,8 @@ module.exports = {
   },
   getArtist: async (options) => {
     const { id, offset } = options;
-    const result = await publicSpotifyApi.getArtist(id).catch(handleError);
-    const albums_result = await publicSpotifyApi.getArtistAlbums(id).catch(handleError);
+    const result = await publicSpotifyApi.getArtist(id);
+    const albums_result = await publicSpotifyApi.getArtistAlbums(id);
     return {
       id: result.body.id,
       name: result.body.name,
@@ -113,9 +110,9 @@ module.exports = {
   },
   getSong: async (options) => {
     const { id } = options;
-    const result = await publicSpotifyApi.getTrack(id).catch(handleError);
-    const genius = await fetch(`https://api.genius.com/search?per_page=35&q=${encodeURI(`${formatSongTitle(result.body.name)} ${result.body.artists[0].name}`)}&access_token=4qtBMiQeR5pD1zFm-vGmFV6j5khGAiRQskTCLXyuGbxeYGbnXrTnXIyA5n2iXjdg`, { method: 'get' }).catch(handleError);
-    const json = await genius.json().catch(handleError);
+    const result = await publicSpotifyApi.getTrack(id);
+    const genius = await fetch(`https://api.genius.com/search?per_page=35&q=${encodeURI(`${formatSongTitle(result.body.name)} ${result.body.artists[0].name}`)}&access_token=4qtBMiQeR5pD1zFm-vGmFV6j5khGAiRQskTCLXyuGbxeYGbnXrTnXIyA5n2iXjdg`, { method: 'get' });
+    const json = await genius.json();
     return {
       id: result.body.id,
       genius: json.response.hits.length > 0 
@@ -141,7 +138,7 @@ module.exports = {
     const { accessToken, offset, limit } = options;
     const spotifyApi = new SpotifyWebApi(connectionData);
     spotifyApi.setAccessToken(accessToken);
-    const result = await spotifyApi.getUserPlaylists({ limit, offset }).catch(handleError);
+    const result = await spotifyApi.getUserPlaylists({ limit, offset });
     return {
       items: result.body.items.map(playlist => ({
         id: playlist.id,
@@ -158,7 +155,7 @@ module.exports = {
     const { accessToken, id, offset, limit } = options;
     const spotifyApi = new SpotifyWebApi(connectionData);
     spotifyApi.setAccessToken(accessToken);
-    const result = await spotifyApi.getPlaylistTracks(id, { limit, offset }).catch(handleError);
+    const result = await spotifyApi.getPlaylistTracks(id, { limit, offset });
     return {
       items: result.body.items.map((playlistTrack) => ({
         id: playlistTrack.track.id,

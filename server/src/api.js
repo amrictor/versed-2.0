@@ -3,8 +3,13 @@ const app = express();
 
 const spotify = require('./spotify');
 
+const handleError = (res) => (err) => {
+  console.error(err);
+  res.status(500);
+}
+
 app.get('/authorize' , (req, res) => {
-  spotify.authorize().then((result) => { res.status(200).json(result)});
+  spotify.authorize().catch(handleError(res)).then((result) => { res.status(200).json(result)});
 });
 
 app.post('/refresh-access-token' , (req, res) => {
@@ -36,7 +41,7 @@ app.post('/playlists' , (req, res) => {
 });
 
 app.post('/playlist' , (req, res) => {
-  spotify.getPlaylist(req.body).catch(err => console.log(err)).then((result) => res.status(200).json(result));
+  spotify.getPlaylist(req.body).then((result) => res.status(200).json(result));
 });
 
 module.exports = app;
