@@ -1,0 +1,2 @@
+export const getPlaylist = (id, offset, total) => ({ type: 'GET_PLAYLIST', id, offset, total });
+export const getPlaylistSuccess = (tracks, offset, total) => ({ type: 'GET_PLAYLIST_SUCCESS', tracks, offset, total });

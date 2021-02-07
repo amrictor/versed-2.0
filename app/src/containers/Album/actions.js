@@ -1,0 +1,2 @@
+export const getAlbum = (id, offset, total) => ({ type: 'GET_ALBUM', id, offset, total });
+export const getAlbumSuccess = (tracks, offset, total) => ({ type: 'GET_ALBUM_SUCCESS', tracks, offset, total });
