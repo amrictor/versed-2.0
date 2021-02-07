@@ -1,4 +1,4 @@
-export const getSpotifySong = (id, push) => ({ type:'GET_SPOTIFY_SONG', id, push });
+export const getSpotifySong = (id, push, controller) => ({ type:'GET_SPOTIFY_SONG', id, push, controller });
 export const setSource = (source) => ({ type: 'SET_SOURCE', source });
 
 export const loadNextSong = () => ({ type: 'LOAD_NEXT_SONG' });

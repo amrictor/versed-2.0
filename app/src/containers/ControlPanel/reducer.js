@@ -32,8 +32,10 @@ export default function controlPanelReducer(state = initialState, action) {
     }
     case 'SET_SOURCE':
       return state
+        .set('currentIndex', 0)
         .set('currentSource', action.source)
-        .set('shuffleMap', action.source.map((value, index) => index));
+        .set('shuffle', false)
+        .set('shuffleMap', action.source && action.source.map((value, index) => index));
     case 'GET_SPOTIFY_PLAYLISTS':
       return state.set('spotifyPlaylists', null);
     case 'GET_SPOTIFY_PLAYLISTS_SUCCESS':

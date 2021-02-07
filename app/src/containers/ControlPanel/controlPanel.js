@@ -43,9 +43,9 @@ const ControlPanel = () => {
 
   useEffect(() => {
     if (currentSource) {
-      dispatch(getSpotifySong(currentSource[currentIndex].id, history.push));
+      dispatch(getSpotifySong(currentSource[currentIndex].id, history.push, true));
     }
-  }, [currentIndex, JSON.stringify(currentSource)])
+  }, [currentIndex, JSON.stringify(currentSource)]);
 
   return (
     <div className={classes.root}>

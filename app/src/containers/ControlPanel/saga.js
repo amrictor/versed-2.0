@@ -4,7 +4,7 @@ import { takeLatest, all, select, put } from 'redux-saga/effects';
 import makeSelectApp from "containers/App/selectors";
 import { getRequestOptions, request } from "utils/request";
 
-import { getGeniusSongSuccess, getSpotifyPlaylistsSuccess } from "./actions";
+import { getGeniusSongSuccess, getSpotifyPlaylistsSuccess, setSource } from "./actions";
 
 export function* makeGetSpotifyPlaylistsRequest(action) {
   const { spotifyToken } = yield select(makeSelectApp());
@@ -26,6 +26,7 @@ export function* makeGetSpotifySongRequest(action) {
       id: action.id
     }
     const response = yield request(`/api/public/song`, getRequestOptions('post', payload));
+    if (!action.controller) yield put(setSource(null));
     if (response.genius) action.push(`/songs/${response.genius}`);
     else alert("We can't find the lyrics for this song!")
   } catch(err) {

@@ -31,7 +31,8 @@ const Song = (props) => {
   }
 
   useEffect(() => {
-    dispatch(getGeniusSong(id))
+    dispatch(getGeniusSong(id));
+    setState({ discoveredWords: [] });
     return () => dispatch(getGeniusSongSuccess(null));
   }, [id]);
 
