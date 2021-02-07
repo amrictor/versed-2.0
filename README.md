@@ -4,6 +4,8 @@
 This is a game designed to be played in a web browser on a computer (not super mobile friendly just yet). At its simplest level, it asks the user to recite lyrics from memory, but the way I like to play is to compile playlists of songs and shuffle them. This way, the game becomes less focussed on getting the lyrics all right, and more on guessing the song at all. It's based on a trend on [Sporcle](http://sporcle.com) where users create lyrics quizzes without providing a song title - instead, they'll usually tell you an artist, album, or franchise.
 
 ### Local Development
+* This project requires Node to be installed. It was developed using `node v14.5.0` and `npm v6.14.5`.
+
 #### In the `server` directory:
 * You will need an environment file (.env) with the values `CLIENT_ID` and `CLIENT_SECRET` set to the values from your Spotify developer account. You can set one up [here](https://developer.spotify.com/) if you don't have one already.
 * You will need a valid SSL key and certificate `ssl.key` and `ssl.crt`. You can a generate self-signed certificate by running `openssl req -nodes -new -x509 -keyout ssl.key -out ssl.crt` in this directory, but you may need to change settings in your browser for it to allow you to use untrusted certificates on localhost.
