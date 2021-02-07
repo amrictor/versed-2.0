@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BrotliPlugin = require('brotli-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js',
@@ -7,7 +8,9 @@ module.exports = {
   devtool : 'inline-source-map',
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: 'bundle.js'
+    filename: '[name].[fullhash:8].js',
+    sourceMapFilename: '[name].[fullhash:8].map',
+    chunkFilename: '[id].[fullhash:8].js'
   },
   devServer: {
     historyApiFallback: true,
@@ -54,5 +57,22 @@ module.exports = {
       template: path.resolve('./public/index.html'),
       favicon: "./public/favicon.ico"
     }),
-  ]
+    new BrotliPlugin({
+			asset: '[path].br[query]',
+			test: /\.(js|css|html|svg)$/,
+			threshold: 10240,
+			minRatio: 0.8
+		})
+  ],
+  optimization: {
+		splitChunks: {
+			cacheGroups: {
+				commons: {
+					test: /[\\/]node_modules[\\/]/,
+					name: 'vendors',
+					chunks: 'all'
+				}
+			}
+		}
+	}
 };
