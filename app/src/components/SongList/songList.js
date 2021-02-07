@@ -37,9 +37,16 @@ const ContextMenu = (props) => {
     //   action: () => history.push(`/artist/${props.track.artists[0].id}`)
     // },
   ]
+
+  const handleMenuClick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  }
+
   return (
     <div>
-      <IconButton size="small" onClick={(event)=>setAnchorEl(event.currentTarget)}><MoreVert/></IconButton>
+      <IconButton size="small" onClick={handleMenuClick}><MoreVert/></IconButton>
       <Menu
         anchorEl={anchorEl}
         keepMounted
@@ -52,11 +59,17 @@ const ContextMenu = (props) => {
           },
         }}
       >
-        {options.map((option) => (
-          <MenuItem key={option.name} onClick={() => { option.action(); setAnchorEl(null); }}>
+        {options.map((option) => {
+          const handleMenuItemClick = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            option.action(); 
+            setAnchorEl(null);
+          }
+          return <MenuItem key={option.name} onClick={handleMenuItemClick}>
             {option.name}
           </MenuItem>
-        ))}
+        })}
       </Menu>
     </div>
     
@@ -74,25 +87,28 @@ const SongList = (props) => {
   const classes = useStyles();
 
   return (
-    tracks && tracks.map(track => 
-      <div className={classes.songBlock} key={track.id} onClick={() => dispatch(getSpotifySong(track.id, history.push))}>
-        <div className={classes.song}>
-          <img className={classes.albumCover} src={track.album.images && track.album.images.length === 3 && track.album.images[2].url}/>
-          <div className={classes.trackInfo}>
-            <div className={classes.trackTitle}>
-              {track.name}
-            </div>
-            <div className={classes.trackAlbum}>
-              {track.album.name}
-            </div>
-            <div className={classes.trackArtists}>
-              {track.artists.map(artist => artist.name).join(', ')}
+    <div>
+     {tracks && tracks.map(track => 
+        <div className={classes.songBlock} key={track.id} onClick={() => dispatch(getSpotifySong(track.id, history.push))}>
+          <div className={classes.song}>
+            <img className={classes.albumCover} src={track.album.images && track.album.images.length === 3 && track.album.images[2].url}/>
+            <div className={classes.trackInfo}>
+              <div className={classes.trackTitle}>
+                {track.name}
+              </div>
+              <div className={classes.trackAlbum}>
+                {track.album.name}
+              </div>
+              <div className={classes.trackArtists}>
+                {track.artists.map(artist => artist.name).join(', ')}
+              </div>
             </div>
           </div>
+          <ContextMenu track={track} customPlaylist={customPlaylist}/>
         </div>
-        <ContextMenu track={track} customPlaylist={customPlaylist}/>
-      </div>
-    )
+      )}
+      {tracks && tracks.length === 0 && <div className={classes.emptyList}>No tracks available.</div>}
+    </div>
   )
 }
 

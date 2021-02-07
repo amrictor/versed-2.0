@@ -1,6 +1,12 @@
 import { makeStyles } from '@material-ui/core';
 
 export const useStyles = makeStyles({
+  emptyList: {
+    marginTop: 100,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   song: {
     flexShrink: 1,
     padding: '3px 0px',

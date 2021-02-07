@@ -51,6 +51,10 @@ const useStyles = makeStyles({
       backgroundColor: 'white',
       color: grey[900]
     },
+    '&:disabled': {
+      backgroundColor: grey[500],
+      color: grey[900]
+    }
   },
   input: {
     height: 30,
@@ -59,7 +63,7 @@ const useStyles = makeStyles({
     outline: 'none',
     borderRadius: 8,
     border: '0px',
-    boxShadow: '0px 0px red',
+    boxShadow: `0px 0px ${grey[900]}`,
     transition: 'box-shadow .2s',
     '&:focus': {
       border: '0px solid black',

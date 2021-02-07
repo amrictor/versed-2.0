@@ -34,19 +34,20 @@ const Album = () => {
 
   return (
     <div className={classes.root}>
-      {loading || tracks.length === 0 ? 'Loading...' : 
-      <div>
-        <div className={classes.outerAlbumHeader}>
-          <div className={classes.innerAlbumHeader}>
-            <img className={classes.albumArt} src={ tracks[0].album.images[1].url}/>
-            <div className={classes.albumInfo}>
-              <div className={classes.albumTitle}>{tracks[0].album.name}</div>
-              <div className={classes.albumArtists}>{tracks[0].album.artists.map(artist => artist.name).join(', ')}</div>
+      {loading || tracks.length === 0 
+        ? <div className={classes.loading}>Loading...</div>
+        : <div>
+          <div className={classes.outerAlbumHeader}>
+            <div className={classes.innerAlbumHeader}>
+              <img className={classes.albumArt} src={ tracks[0].album.images[1].url}/>
+              <div className={classes.albumInfo}>
+                <div className={classes.albumTitle}>{tracks[0].album.name}</div>
+                <div className={classes.albumArtists}>{tracks[0].album.artists.map(artist => artist.name).join(', ')}</div>
+              </div>
             </div>
           </div>
-        </div>
-        <SongList tracks={tracks}/>
-      </div>}
+          <SongList tracks={tracks}/>
+        </div>}
     </div>
   );
 }

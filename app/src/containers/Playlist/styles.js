@@ -9,6 +9,13 @@ const useStyles = makeStyles({
     width: '100%',
     overflow: 'auto',
   }, 
+  loading: {
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   search: {
     background: grey[700],
     position: 'sticky',
