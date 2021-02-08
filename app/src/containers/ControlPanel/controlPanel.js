@@ -35,7 +35,7 @@ const ControlPanel = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const classes = useStyles();
-  const { playing, shuffle, currentSong, currentSource, currentIndex, spotifyPlaylists, hasForfeited, hasWon } = useSelector(selectControlPanel);
+  const { playing, shuffle, currentSong, currentSource, currentIndex, shuffleMap, spotifyPlaylists, hasForfeited, hasWon } = useSelector(selectControlPanel);
 
   useEffect(() => {
     if(!spotifyPlaylists) dispatch(getSpotifyPlaylists());
@@ -43,7 +43,7 @@ const ControlPanel = () => {
 
   useEffect(() => {
     if (currentSource) {
-      dispatch(getSpotifySong(currentSource[currentIndex].id, history.push, true));
+      dispatch(getSpotifySong(currentSource[shuffleMap[currentIndex]].id, history.push, true));
     }
   }, [currentIndex, JSON.stringify(currentSource)]);
 

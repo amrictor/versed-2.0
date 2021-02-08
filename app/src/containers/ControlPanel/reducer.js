@@ -22,13 +22,13 @@ export default function controlPanelReducer(state = initialState, action) {
       const currentIndex = state.get('currentIndex')
       const currentSource = state.get('currentSource')
       const nextIndex = currentIndex < (currentSource.length - 1) ? (currentIndex + 1) : 0;
-      return state.set('currentIndex', state.get('shuffleMap')[nextIndex]);
+      return state.set('currentIndex', nextIndex);
     }
     case 'LOAD_PREV_SONG': {
       const currentIndex = state.get('currentIndex');
       const currentSource = state.get('currentSource');
       const prevIndex = currentIndex > 0 ? (currentIndex - 1) : (currentSource.length - 1);
-      return state.set('currentIndex', state.get('shuffleMap')[prevIndex]);
+      return state.set('currentIndex', prevIndex);
     }
     case 'SET_SOURCE':
       return state
