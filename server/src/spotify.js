@@ -1,6 +1,6 @@
 const SpotifyWebApi = require('spotify-web-api-node');
 const fetch = require('node-fetch');
-const { formatSongTitle } = require('./utils');
+const { formatSongTitle, formatArtist, regularExpression, levenshteinDistance } = require('./utils');
 
 const connectionData = {
   clientId: process.env.CLIENT_ID,
@@ -86,9 +86,18 @@ module.exports = {
       const album = await publicSpotifyApi.getAlbum(id, { limit, offset });
       const result = await publicSpotifyApi.getAlbumTracks(id, { limit, offset });
       return {
+        id: album.body.id,
+        name: album.body.name,
+        artists: album.body.artists.map((artist) => ({
+          id: artist.id,
+          name: artist.name
+        })),
+        images: album.body.images,
+        url: album.href,
         items: result.body.items.map((track) => ({
           id: track.id,
           name: track.name,
+          url: track.href,
           artists: track.artists.map((artist) => ({
             id: artist.id,
             name: artist.name
@@ -137,14 +146,25 @@ module.exports = {
     try {
       const { id } = options;
       const result = await publicSpotifyApi.getTrack(id);
-      const genius = await fetch(`https://api.genius.com/search?per_page=35&q=${encodeURI(`${formatSongTitle(result.body.name)} ${result.body.artists[0].name}`)}&access_token=4qtBMiQeR5pD1zFm-vGmFV6j5khGAiRQskTCLXyuGbxeYGbnXrTnXIyA5n2iXjdg`, { method: 'get' });
-      const json = await genius.json();
+      let searchResults = await Promise.all(result.body.artists.map(artist => fetch(`https://api.genius.com/search?per_page=10&q=${encodeURI(`${formatSongTitle(result.body.name)} ${artist.name}`)}&access_token=4qtBMiQeR5pD1zFm-vGmFV6j5khGAiRQskTCLXyuGbxeYGbnXrTnXIyA5n2iXjdg`, { method: 'get' })));
+      searchResults = await Promise.all(searchResults.map(result => result.json()))
+      const hits = searchResults.reduce((hitsSoFar, e) => [...hitsSoFar, ...e.response.hits], [])
+      const comparisons = hits.reduce((comparisonsSoFar, hit) => 
+        [
+          ...comparisonsSoFar, 
+          ...result.body.artists.map(artist => ({
+            distance: levenshteinDistance(formatSongTitle(hit.result.title), formatSongTitle(result.body.name)) 
+            + levenshteinDistance(formatArtist(hit.result.primary_artist.name), formatArtist(artist.name)),
+            id: hit.result.id
+          }))
+        ], []).sort((a, b) => a.distance - b.distance);
+      const geniusId = comparisons[0].distance < 1 ? comparisons[0]?.id : null;
+      
       return {
         id: result.body.id,
-        genius: json.response.hits.length > 0 
-          ? json.response.hits[0].result.id 
-          : null,
+        genius: geniusId,
         name: result.body.name,
+        url: result.body.href,
         artists: result.body.artists.map((artist) => ({
           id: artist.id,
           name: artist.name
@@ -189,11 +209,18 @@ module.exports = {
       const { accessToken, id, offset, limit } = options;
       const spotifyApi = new SpotifyWebApi(connectionData);
       spotifyApi.setAccessToken(accessToken);
+      const playlist = await spotifyApi.getPlaylist(id);
+      console.log(playlist);
       const result = await spotifyApi.getPlaylistTracks(id, { limit, offset });
       return {
+        name: playlist.body.name,
+        images: playlist.body.images,
+        url: playlist.body.href,
+        owner: playlist.body.owner?.display_name,
         items: result.body.items.map((playlistTrack) => ({
           id: playlistTrack.track.id,
           name: playlistTrack.track.name,
+          url: playlistTrack.track.href,
           artists: playlistTrack.track.artists.map((artist) => ({
             id: artist.id,
             name: artist.name

@@ -11,8 +11,9 @@ const publicAPI = require('./api')
 app.use('/api/public', cors(), publicAPI);
 
 const credentials = {
-  key: fs.readFileSync('ssl.key'), 
-  cert: fs.readFileSync('ssl.crt')
+  key: fs.readFileSync('ssl/private.key'), 
+  cert: fs.readFileSync('ssl/certificate.crt'),
+  ca: fs.readFileSync('ssl/ca_bundle.crt'),
 };
 const httpsServer = https.createServer(credentials, app);
 
